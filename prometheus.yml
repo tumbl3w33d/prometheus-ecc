@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+      scheme: http
+      timeout: 10s
+      api_version: v1
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+  - job_name: node_exporter
+    scheme: https
+    tls_config:
+      ca_file: /cert/ca.crt
+      #insecure_skip_verify: False
+    static_configs:
+      - targets:
+          - www.example.com:9100

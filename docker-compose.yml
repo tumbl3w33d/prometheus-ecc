@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    hostname: prometheus
+    networks:
+      prom-net:
+    volumes:
+      # directly loading the certificate works
+      #- "./ecc.crt:/cert/ca.crt"
+      # but loading the CA which issued that certificate doesn't
+      - "./ca/my-prom-ca.crt:/cert/ca.crt"
+      - "./prometheus.yml:/cfg/prometheus.yml"
+    command:
+      - "--log.level=info"
+      - "--config.file=/cfg/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+    ports:
+      - 127.0.0.1:9090:9090
+  node_exporter:
+    image: quay.io/prometheus/node-exporter
+    volumes:
+      - "./web-config.yml:/cfg/web-config.yml:ro,rslave"
+      - "./ecc.crt:/cert/ecc.crt"
+      - "./ecc.key:/cert/ecc.key"
+    networks:
+      prom-net:
+        aliases:
+          - www.example.com
+    command: >-
+      --web.config=/cfg/web-config.yml
+      --log.level=info
+
+networks:
+  prom-net:

@@ -1,0 +1,6 @@
+tls_server_config:
+  cert_file: /cert/ecc.crt
+  key_file: /cert/ecc.key
+
+http_server_config:
+  http2: true
